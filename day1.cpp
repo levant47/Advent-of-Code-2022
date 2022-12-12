@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "common.cpp"
 
 char* SOURCE =
 "5916\n"
@@ -2265,52 +2265,6 @@ char* SOURCE =
 "3175\n"
 "\n"
 ;
-
-HANDLE stdout;
-
-int get_length(char* string)
-{
-    int result = 0;
-    while (string[result] != '\0') { result++; }
-    return result;
-}
-
-void panic()
-{
-    char message[] = "panic";
-    WriteConsole(stdout, message, sizeof(message), nullptr, nullptr);
-    ExitProcess(1);
-}
-
-void print(int value)
-{
-    char buffer[21];
-    int count = 0;
-    do
-    {
-        buffer[count] = value % 10 + '0';
-        value /= 10;
-        count++;
-    }
-    while (value != 0);
-    for (int i = 0; i < count / 2; i++)
-    {
-        auto temp = buffer[i];
-        buffer[i] = buffer[count - i - 1];
-        buffer[count - i - 1] = temp;
-    }
-    WriteConsole(stdout, buffer, count, nullptr, nullptr);
-}
-
-void print(char* message)
-{
-    WriteConsole(stdout, message, get_length(message), nullptr, nullptr);
-}
-
-bool is_digit(char c)
-{
-    return c >= '0' && c <= '9';
-}
 
 void update_top_3(int value, int* top_3)
 {

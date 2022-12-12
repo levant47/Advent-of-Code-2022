@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "common.cpp"
 
 char* SOURCE =
 "A Y\n"
@@ -2502,61 +2502,6 @@ char* SOURCE =
 "B Y\n"
 "A Y\n"
 ;
-
-int get_length(char* string)
-{
-    int result = 0;
-    while (string[result] != '\0') { result++; }
-    return result;
-}
-
-HANDLE stdout;
-
-void initialize_printing()
-{
-    stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-}
-
-void panic(char* additional_message = nullptr)
-{
-    char message[] = "panic\n";
-    WriteConsole(stdout, message, sizeof(message) - 1, nullptr, nullptr);
-    if (additional_message != nullptr)
-    {
-        WriteConsole(stdout, additional_message, get_length(additional_message), nullptr, nullptr);
-    }
-    ExitProcess(1);
-}
-
-void print(char* message)
-{
-    WriteConsole(stdout, message, get_length(message), nullptr, nullptr);
-}
-
-void print(char c)
-{
-    WriteConsole(stdout, &c, 1, nullptr, nullptr);
-}
-
-void print(int value)
-{
-    char buffer[21];
-    int count = 0;
-    do
-    {
-        buffer[count] = value % 10 + '0';
-        value /= 10;
-        count++;
-    }
-    while (value != 0);
-    for (int i = 0; i < count / 2; i++)
-    {
-        auto temp = buffer[i];
-        buffer[i] = buffer[count - i - 1];
-        buffer[count - i - 1] = temp;
-    }
-    WriteConsole(stdout, buffer, count, nullptr, nullptr);
-}
 
 bool is_their_play(char c)
 {
