@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.22)
+project(aoc22)
+
+set(CMAKE_CXX_STANDARD 14)
+
+add_executable(aoc22_1 day1.cpp)
+add_executable(aoc22_2 day2.cpp)
+add_executable(aoc22_3 day3.cpp)
+add_executable(aoc22_4 day4.cpp)
+add_executable(aoc22_5 day5.cpp)
+add_executable(aoc22_6 day6.cpp)
+add_executable(aoc22_7 day7.cpp)
+add_executable(aoc22_8 day8.cpp)
+add_executable(aoc22_9 day9.cpp)
+add_executable(aoc22_10 day10.cpp)
+add_executable(aoc22_11 day11.cpp)
+add_executable(aoc22_12 day12.cpp)

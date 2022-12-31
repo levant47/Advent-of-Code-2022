@@ -27,21 +27,49 @@ int abs(int value) { return value >= 0 ? value : -value; }
 
 HANDLE stdout;
 
-void initialize_printing() { stdout = GetStdHandle(STD_OUTPUT_HANDLE); }
+bool is_printing_initialized;
+void initialize_printing()
+{
+    stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    is_printing_initialized = true;
+}
+
+void print(char* message, int length)
+{
+    if (!is_printing_initialized) { initialize_printing(); }
+    WriteFile(stdout, message, length, nullptr, nullptr);
+}
+
+void print(char* message) { print(message, get_length(message)); }
 
 void panic()
 {
-    char message[] = "panic\n";
-    WriteConsole(stdout, message, sizeof(message) - 1, nullptr, nullptr);
+    print("panic\n");
     if (IsDebuggerPresent()) { __debugbreak(); }
     ExitProcess(1);
 }
 
-void print(char* message) { WriteConsole(stdout, message, get_length(message), nullptr, nullptr); }
+void print(char c) { print(&c, 1); }
 
-void print(char* message, int length) { WriteConsole(stdout, message, length, nullptr, nullptr); }
-
-void print(char c) { WriteConsole(stdout, &c, 1, nullptr, nullptr); }
+void print(u64 value)
+{
+    char buffer[21];
+    u64 count = 0;
+    do
+    {
+        buffer[count] = remainder(value, 10) + '0';
+        value /= 10;
+        count++;
+    }
+    while (value != 0);
+    for (int i = 0; i < count / 2; i++)
+    {
+        auto temp = buffer[i];
+        buffer[i] = buffer[count - i - 1];
+        buffer[count - i - 1] = temp;
+    }
+    print(buffer, count);
+}
 
 void print(s64 value)
 {
@@ -63,7 +91,7 @@ void print(s64 value)
         buffer[i] = buffer[count - i - 1];
         buffer[count - i - 1] = temp;
     }
-    WriteConsole(stdout, buffer, count, nullptr, nullptr);
+    print(buffer, count);
 }
 
 void print(int value) { print((s64)value); }
@@ -130,5 +158,21 @@ void add(T item, Array<T>* array)
     if (array->size == array->capacity) { panic(); }
     array->data[array->size] = item;
     array->size++;
+}
+
+template <typename T>
+T get(u64 i, Array<T> array) { return array.data[i]; }
+
+template <typename T>
+bool contains(T item, Array<T> array)
+{
+    for (u64 i = 0; i < array.size; i++)
+    {
+        if (get(i, array) == item)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 #endif
