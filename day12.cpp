@@ -179,13 +179,13 @@ u64 get_value(char point)
     return point;
 }
 
-Point find_start(GameMap game_map)
+Point find(char target, GameMap game_map)
 {
     for (u64 x = 0; x < game_map.width; x++)
     {
         for (u64 y = 0; y < game_map.height; y++)
         {
-            if (get(x, y, game_map) == 'S')
+            if (get(x, y, game_map) == target)
             {
                 Point result;
                 result.x = x;
@@ -343,32 +343,85 @@ u64 bfs_solve(Point start, GameMap game_map)
 u64 bfs_solve_part_1(char* source)
 {
     auto game_map = make_game_map(source);
-    auto start = find_start(game_map);
+    auto start = find('S', game_map);
     return bfs_solve(start, game_map);
 }
 
+// this is just like part 1, except we search in reverse, from the destination point
 u64 bfs_solve_part_2(char* source)
 {
     auto game_map = make_game_map(source);
-    u64 shortest = game_map.width * game_map.height;
-    Point location;
-    for (location.x = 0; location.x < game_map.width; location.x++)
+    auto visited = make_array<Point>(game_map.width * game_map.height);
+    auto frontier = make_queue<PointWithDistance>(game_map.width * game_map.height);
+    auto start = find('E', game_map);
+
+    PointWithDistance start_with_distance;
+    start_with_distance.point = start;
+    start_with_distance.distance = 0;
+    add(start_with_distance, &frontier);
+    add(start, &visited);
+    while (get_size(frontier) != 0)
     {
-        for (location.y = 0; location.y < game_map.width; location.y++)
+        auto current_location = shift(&frontier);
+        auto current = get(current_location.point, game_map);
+        if (current == 'a')
         {
-            if (get_value(get(location, game_map)) == 'a')
+            return current_location.distance;
+        }
+        // up
+        if (current_location.point.y != 0)
+        {
+            PointWithDistance up;
+            up.point.x = current_location.point.x;
+            up.point.y = current_location.point.y - 1;
+            up.distance = current_location.distance + 1;
+            if (get_value(get(up.point, game_map)) + 1 >= get_value(current) && !contains(up.point, visited))
             {
-                auto original_allocated = allocated;
-                auto distance = bfs_solve(location, game_map);
-                allocated = original_allocated;
-                if (distance < shortest)
-                {
-                    shortest = distance;
-                }
+                add(up, &frontier);
+                add(up.point, &visited);
+            }
+        }
+        // down
+        if (current_location.point.y != game_map.height - 1)
+        {
+            PointWithDistance down;
+            down.point.x = current_location.point.x;
+            down.point.y = current_location.point.y + 1;
+            down.distance = current_location.distance + 1;
+            if (get_value(get(down.point, game_map)) + 1 >= get_value(current) && !contains(down.point, visited))
+            {
+                add(down, &frontier);
+                add(down.point, &visited);
+            }
+        }
+        // left
+        if (current_location.point.x != 0)
+        {
+            PointWithDistance left;
+            left.point.x = current_location.point.x - 1;
+            left.point.y = current_location.point.y;
+            left.distance = current_location.distance + 1;
+            if (get_value(get(left.point, game_map)) + 1 >= get_value(current) && !contains(left.point, visited))
+            {
+                add(left, &frontier);
+                add(left.point, &visited);
+            }
+        }
+        // right
+        if (current_location.point.x != game_map.width - 1)
+        {
+            PointWithDistance right;
+            right.point.x = current_location.point.x + 1;
+            right.point.y = current_location.point.y;
+            right.distance = current_location.distance + 1;
+            if (get_value(get(right.point, game_map)) + 1 >= get_value(current) && !contains(right.point, visited))
+            {
+                add(right, &frontier);
+                add(right.point, &visited);
             }
         }
     }
-    return shortest;
+    return MAX_U64;
 }
 
 int main()
@@ -379,6 +432,7 @@ int main()
     if (test_solution_2 != 29) { print("Incorrect test 2 answer, expected 29, got "); print(test_solution_2); print("\n"); }
 
     print("Answer to part 1: "); print(bfs_solve_part_1(SOURCE)); print("\n");
-    // part 2 takes like 30 seconds to compute, but whatever, at least it works!
     print("Answer to part 2: "); print(bfs_solve_part_2(SOURCE)); print("\n");
+
+    ExitProcess(0);
 }
