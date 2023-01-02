@@ -9,6 +9,16 @@ typedef unsigned short     u16;
 typedef unsigned int       u32;
 typedef unsigned long long u64;
 
+#ifndef max
+template <typename T>
+T max(T left, T right) { return left > right ? left : right; }
+#endif
+
+#ifndef min
+template <typename T>
+T min(T left, T right) { return left < right ? left : right; }
+#endif
+
 int get_length(char* string)
 {
     int result = 0;
