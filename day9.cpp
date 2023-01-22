@@ -2086,8 +2086,8 @@ void execute_move(char move, Point* head)
 void follow(Point* tail, Point* head)
 {
     // my original solution
-    int x_diff = abs(head->x - tail->x);
-    int y_diff = abs(head->y - tail->y);
+    int x_diff = myabs(head->x - tail->x);
+    int y_diff = myabs(head->y - tail->y);
     if (x_diff > 1 || y_diff > 1)
     {
         if (y_diff > x_diff)

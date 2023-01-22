@@ -33,7 +33,7 @@ s64 remainder(s64 dividend, s64 divisor)
     return modulo;
 }
 
-int abs(int value) { return value >= 0 ? value : -value; }
+s64 myabs(const s64 value) { return value >= 0 ? value : -value; }
 
 HANDLE stdout;
 
@@ -168,6 +168,12 @@ void add(T item, Array<T>* array)
     if (array->size == array->capacity) { panic(); }
     array->data[array->size] = item;
     array->size++;
+}
+
+template <typename T>
+void add_unique(T item, Array<T>* array)
+{
+    if (!contains(item, *array)) { add(item, array); }
 }
 
 template <typename T>
